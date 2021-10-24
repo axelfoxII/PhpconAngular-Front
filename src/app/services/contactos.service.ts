@@ -1,55 +1,43 @@
-import { HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { Contactos } from '../interfaces/contactos-interface';
-import { EditContacto } from '../interfaces/editContacto.interface';
-
-
-
-const URL = environment.urlServer;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContactosService {
-  
-  contactos:any=[];
+
   constructor(private http:HttpClient) { }
 
-  obtenerContactos() {
-    return this.http.get<any>(`/phpServer/index.php`);
-  }
 
-  obtenerUnContacto(id:string){
+ obtenerContactos(){
 
-    return this.http.get<any>(`/phpServer/index.php?id=${id}`);
+  return this.http.get<any>('/phpServer/index.php');
 
-  }
+ } 
 
-  agregarContacto(formData:Contactos):Observable<any>{
+ obtenerUnContacto(id:string){
 
-    return this.http.post(`/phpServer/index.php`, JSON.stringify(formData));
-    
+  return this.http.get<any>(`/phpServer/index.php?id=${id}`);
 
-  }
+ }
 
-  editarContacto(id:any, editData:EditContacto){
+ agregarContacto(formData:Contactos){
 
-  
+  return this.http.post('/phpServer/index.php', formData);
 
-    return this.http.put(`/phpServer/index.php?id=${id}`, JSON.stringify(editData));
+ }
 
-  }
+ editarContacto(id:any, formData:Contactos){
 
-  eliminarContacto(id:string){
+  return this.http.put(`/phpServer/index.php?id=${id}` , formData);
 
-    
-    return this.http.delete(`/phpServer/index.php?id=${id}`);
+ }
 
+ eliminarContacto(id:string){
 
-  }
+  return this.http.delete(`/phpServer/index.php?id=${id}`);
 
-
+ }
 
 }
