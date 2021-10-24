@@ -87,9 +87,7 @@ obtenerUnContacto(id:string){
       
      });
 
-     $('#editar').modal('toggle');
-     $('#editar').modal('show')
-    
+       
      localStorage.setItem('idContacto', this.contacto[0]['id']);
   
     })
