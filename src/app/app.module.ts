@@ -4,10 +4,12 @@ import {HttpClientModule} from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
+import { DomseguroPipe } from './pipes/domseguro.pipe';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DomseguroPipe
   ],
   imports: [
     BrowserModule,

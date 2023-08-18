@@ -11,7 +11,9 @@
     <table class="table">
         <thead class="thead-dark">
             <tr>
+                
                 <th scope="col">#</th>
+                <th scope="col">Imagen</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Telefono</th>
                 <th scope="col">Email</th>
@@ -22,6 +24,9 @@
         <tbody>
             <tr *ngFor="let contacto of contactos; let i=index;">
                 <th scope="row">{{i+1}}</th>
+                <td *ngIf="contacto.imagen"><img [src]="contacto.imagen | domseguro" class="img-thumbnail imgContacto"> 
+                <td *ngIf="!contacto.imagen"><img [src]="noimage" class="img-thumbnail imgContacto">
+                </td>
                 <td>{{contacto.nombre}}</td>
                 <td>{{contacto.telefono}}</td>
                 <td>{{contacto.email}}</td>
@@ -42,7 +47,7 @@
         <div class="modal-content">
             <div class="modal-header bg-dark text-white">
                 <h5 class="modal-title" id="staticBackdropLabel"><i class="fas fa-plus"></i> Agregar Contacto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" (click)="cerrarEdit()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
             </div>
@@ -64,8 +69,14 @@
 
 
                     </div>
+                    <div class="form-group">
+
+                        <input type="file" accept="image/*" (change)="seleccionarArchivo($event)" formControlName="imagen">
+
+
+                    </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" (click)="cerrarEdit()" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>
@@ -81,7 +92,7 @@
         <div class="modal-content">
             <div class="modal-header bg-dark text-white">
                 <h5 class="modal-title" id="staticBackdropLabel"><i class="fas fa-pencil-alt"></i> Editar Contacto</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" (click)="cerrarEdit()" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
             </div>
@@ -103,8 +114,15 @@
 
 
                     </div>
+                
+                    <div class="form-group">
+
+                        <input type="file" accept="image/*" (change)="seleccionarArchivo($event)" formControlName="imagen">
+
+
+                    </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" (click)="cerrarEdit()" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
                 </form>

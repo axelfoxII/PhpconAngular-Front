@@ -1,4 +1,4 @@
 export const environment = {
-  urlServer:'http://localhost/phpSever',
+  urlServer:'http://apiphp.com',
   production: true
 };

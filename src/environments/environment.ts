@@ -3,7 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  urlServer:'http://localhost/phpSever',
+  urlServer:'http://apiphp.com',
   production: false
 };
 
