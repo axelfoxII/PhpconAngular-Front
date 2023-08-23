@@ -8,7 +8,7 @@ export class DomseguroPipe implements PipeTransform {
   constructor( private domSanitizer:DomSanitizer ){ }
 
   transform( value: string): any {
-    let url = 'http://apiphp.com/views/img/';
+    let url = 'http://tuapi.com/views/img/';
     return this.domSanitizer.bypassSecurityTrustResourceUrl( url + value );
   }
 
