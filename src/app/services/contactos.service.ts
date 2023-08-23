@@ -10,6 +10,7 @@ import { UploadImg } from '../interfaces/cargarImg.interface';
 })
 export class ContactosService {
 
+  //TIENES QUE PONER TU API
   private URL ='http://tuapi.com';
   
   constructor(private http:HttpClient) { }
