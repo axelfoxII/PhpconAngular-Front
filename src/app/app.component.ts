@@ -17,298 +17,305 @@ declare var $:any;
   
 })
 export class AppComponent implements OnInit {
+ contacto: any;
+  contactos: any = [];
+  archivo: UploadImg;
+  noimage = '../assets/noimage.png';
+  formulario!: Contactos;
+  imgBorrar: Contactos[] = [];
+  uuid = uuidv4();
 
-  contacto:any;
-  contactos:any=[];
-  archivo:UploadImg;
-  noimage='../assets/noimage.png';
-  formulario!:Contactos;
-  imgBorrar:Contactos[]=[];
-  uuid=uuidv4();
-  
-  
+
   public Forma = this.fb.group({
-  
+
     nombre: [''],
     telefono: [''],
     email: [''],
-    imagen:null
-    
+    imagen: null
+
   });
 
-  constructor(private contactoSvc: ContactosService, private fb:FormBuilder){
+  constructor(private contactoSvc: ContactosService, private fb: FormBuilder) {
 
     this.archivo = {
-			
-			nombreArchivo: "",
+
+      nombreArchivo: "",
       base64textString: null
-		};
+    };
 
   }
 
   ngOnInit() {
-  this.obtenerContactos();
+    this.obtenerContactos();
   }
 
 
-  
-  seleccionarArchivo(event:any) {
+  /* TRABAJA CON LAS IMAGENES */
 
-    
+  seleccionarArchivo(event: any) {
+
+
     var files = event.target.files;
     var file = files[0];
     this.archivo.nombreArchivo = `${this.uuid}-${file.name}`;
 
-    if(files && file) {
+    if (files && file) {
       var reader = new FileReader();
       reader.onload = this._handleReaderLoaded.bind(this);
       reader.readAsBinaryString(file);
     }
   }
 
-  _handleReaderLoaded(readerEvent:any) {
+  _handleReaderLoaded(readerEvent: any) {
     var binaryString = readerEvent.target.result;
     this.archivo.base64textString = btoa(binaryString);
   }
 
- obtenerContactos(){
 
-  this.contactoSvc.obtenerContactos().subscribe((res:Contactos)=>{
+ /* METODO GET */
+  obtenerContactos() {
 
-    this.contactos= res;
+    this.contactoSvc.obtenerContactos().subscribe((res: Contactos) => {
 
-    console.log(this.contactos);
+      this.contactos = res;
 
-  })
+      console.log(this.contactos);
 
-}  
+    })
 
-agregarContacto(){
- 
-   this.formulario ={
+  }
 
-    imagen:this.archivo.nombreArchivo,
-    nombre:this.Forma.value.nombre,
-    telefono:this.Forma.value.telefono,
-    email:this.Forma.value.email
+  /* METODO POST */
 
-   }
+  agregarContacto() {
 
-   this.contactoSvc.agregarContacto(this.formulario).subscribe(res=>{
+    this.formulario = {
 
-    this.upload();
-    
-    Swal.fire({
-      icon:'success',
-      title:'Exito',
-      text:'Contacto creado correctamente',
-      showConfirmButton: true
-    }).then((result)=>{
+      imagen: this.archivo.nombreArchivo,
+      nombre: this.Forma.value.nombre,
+      telefono: this.Forma.value.telefono,
+      email: this.Forma.value.email
 
-      localStorage.removeItem('imgContacto');
-      
-      location.reload();
+    }
+
+    this.contactoSvc.agregarContacto(this.formulario).subscribe(res => {
+
+      this.upload();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Exito',
+        text: 'Contacto creado correctamente',
+        showConfirmButton: true
+      }).then((result) => {
+
+        localStorage.removeItem('imgContacto');
+
+        location.reload();
+
+      });
+    }, (err) => {
+
+      Swal.fire('Error', 'No se pudo agregar contacto', err);
 
     });
-  }, (err)=>{
-    
-      Swal.fire('Error', 'No se pudo agregar contacto', 'error');
 
-   });
 
-   
 
-}
+  }
 
-obtenerUnContacto(id:string){
-  
-  this.contactoSvc.obtenerUnContacto(id).subscribe((res:Contactos)=>{
-    
-    this.contacto= res;
-    
-    console.log(this.contacto)
-    
-    this.Forma.setValue({
-        
-      nombre:this.contacto[0]['nombre'],
-      telefono:this.contacto[0]['telefono'],
-      email: this.contacto[0]['email'],
-      imagen:null,
-      
-      
-     });
 
-       
-     localStorage.setItem('idContacto', this.contacto[0]['id']);
-     localStorage.setItem('imgContacto', this.contacto[0]['imagen']);
-     
-      
-   
- 
+   /* METODO GET CON PARAMETRO ID */
+
+  obtenerUnContacto(id: string) {
+
+    this.contactoSvc.obtenerUnContacto(id).subscribe((res: Contactos) => {
+
+      this.contacto = res;
+
+      console.log(this.contacto)
+
+      this.Forma.setValue({
+
+        nombre: this.contacto[0]['nombre'],
+        telefono: this.contacto[0]['telefono'],
+        email: this.contacto[0]['email'],
+        imagen: null,
+
+
+      });
+
+
+      localStorage.setItem('idContacto', this.contacto[0]['id']);
+      localStorage.setItem('imgContacto', this.contacto[0]['imagen']);
+
     })
 
 
 
-}
-
-editarContacto(){
-
-  let imgContact = localStorage.getItem('imgContacto') 
-  
-  if (this.Forma.value.imagen == null) {
-    this.formulario ={
-       
-      imagen:imgContact?.toString(),
-      nombre:this.Forma.value.nombre,
-      telefono:this.Forma.value.telefono,
-      email:this.Forma.value.email
-  
-     }  
-  }else{
-    this.formulario ={
-
-      imagen:this.archivo.nombreArchivo,
-      nombre:this.Forma.value.nombre,
-      telefono:this.Forma.value.telefono,
-      email:this.Forma.value.email
-  
-     }  
   }
-  console.log(this.formulario)
-
-  this.contactoSvc.editarContacto(localStorage.getItem('idContacto'), this.formulario).subscribe(res=>{
-    Swal.fire({
-      icon:'success',
-      title:'Exito',
-      text:'El contacto se actualizo correctamente',
-      confirmButtonText:'Ok'
-    }).then((result)=>{
-  
-      if (result) {
 
 
-          if(this.formulario.imagen == null ){
-            this.upload();
-            
-          
-          }else if(this.formulario.imagen !== null && this.seleccionarArchivo !== null){
-            this.upload();
-            
-          }else{
+
+ /* METODO PUT */
+  editarContacto() {
+
+    let imgContact = localStorage.getItem('imgContacto')
+
+    if (this.Forma.value.imagen == null) {
+      this.formulario = {
+
+        imagen: imgContact?.toString(),
+        nombre: this.Forma.value.nombre,
+        telefono: this.Forma.value.telefono,
+        email: this.Forma.value.email
+
+      }
+    } else {
+      this.formulario = {
+
+        imagen: this.archivo.nombreArchivo,
+        nombre: this.Forma.value.nombre,
+        telefono: this.Forma.value.telefono,
+        email: this.Forma.value.email
+
+      }
+    }
+    console.log(this.formulario)
+
+    this.contactoSvc.editarContacto(localStorage.getItem('idContacto'), this.formulario).subscribe(res => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Exito',
+        text: 'El contacto se actualizo correctamente',
+        confirmButtonText: 'Ok'
+      }).then((result) => {
+
+        if (result) {
+
+          console.log(this.formulario.imagen,this.archivo.nombreArchivo)
+
+          if (this.formulario.imagen == localStorage.getItem('imgContacto') ) {
+            location.reload();
+            return;
+
+          } else if (this.formulario.imagen !== localStorage.getItem('imgContacto') ) {
             this.upload();
             this.deleteImagen(JSON.stringify(localStorage.getItem('imgContacto')))
-          }        
-          
-         
-        localStorage.removeItem('idContacto');
-        localStorage.removeItem('imgContacto');
-        
-        location.reload();
-     
-       
-  
-      }
-  
-    });
-  
-  
-  },(err)=>{
-    
-       Swal.fire('Error', 'No se puedo actualizar!!', 'error');
-  
-  });
-  
-  
-  
-  
-  }
-  
+             
 
-eliminarContacto(id:any){ 
+          } else {
+            this.upload();
+            this.deleteImagen(JSON.stringify(localStorage.getItem('imgContacto')))
+          }
 
-  this.obtenerUnContacto(id);
- 
-  Swal.fire({
-    icon:'question',
-    title:'Desea eliminar el contacto? ',
-    showCancelButton:true,
-    confirmButtonText:'Eliminar'
-  
-  }).then((result)=>{
-     
-    if (result.isConfirmed) {
-      this.deleteImagen(JSON.stringify(localStorage.getItem('imgContacto')))  
-     this.contactoSvc.eliminarContacto(id).subscribe(res=>{
 
-      Swal.fire({
-
-        icon:'success',
-        title:res, 
-        confirmButtonText:'ok',
-
-      }).then((resultado)=>{
-        
-        if (resultado) {
           localStorage.removeItem('idContacto');
           localStorage.removeItem('imgContacto');
-          
+
           location.reload();
+
+
 
         }
 
+      });
 
-      },(err)=>{
-  
-        Swal.fire('Error', 'No se puedo Eliminar contacto!!', err);
-   
-   })
 
-     })
-     
-     
+    }, (err) => {
 
-    }
+      Swal.fire('Error', 'No se puedo actualizar!!', 'error');
 
-  });
+    });
 
 
 
 
-}
+  }
 
-upload() {
 
-  this.contactoSvc.uploadFile(this.archivo)?.subscribe(
+   /* DELETE */
+  eliminarContacto(id: any) {
 
-    (datos:any) => {
-     
+    this.obtenerUnContacto(id);
+
+    Swal.fire({
+      icon: 'question',
+      title: 'Desea eliminar el contacto? ',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar'
+
+    }).then((result) => {
+
+      if (result.isConfirmed) {
+        this.deleteImagen(JSON.stringify(localStorage.getItem('imgContacto')))
+        this.contactoSvc.eliminarContacto(id).subscribe(res => {
+
+          Swal.fire({
+
+            icon: 'success',
+            title: res,
+            confirmButtonText: 'ok',
+
+          }).then((resultado) => {
+
+            if (resultado) {
+              localStorage.removeItem('idContacto');
+              localStorage.removeItem('imgContacto');
+
+              location.reload();
+
+            }
+
+
+          }, (err) => {
+
+            Swal.fire('Error', 'No se puedo Eliminar contacto!!', err);
+
+          })
+
+        })
+
+
+
+      }
+
+    });
+
+
+  }
+
+
+   /* SUBE LAS IMAGENES AL SERVIDOR */
+
+  upload() {
+
+    this.contactoSvc.uploadFile(this.archivo)?.subscribe(
+
+      (datos: any) => {
+
         console.log(datos)
 
-       
-        
+
+
 
       })
-   
 
- 
-  
-}
+  }
 
+ /* ELIMINA LAS IMAGENES DE SERVIDOR */
+  deleteImagen(imagen: string) {
 
-deleteImagen(imagen:string){
+    this.contactoSvc.deleteFile(imagen);
 
-  this.contactoSvc.deleteFile(imagen);
+  }
 
-}
+  cerrarEdit() {
 
-cerrarEdit(){
+    this.Forma.reset();
+    localStorage.removeItem('idContacto')
+    localStorage.removeItem('imgContacto')
 
-  this.Forma.reset();
-  localStorage.removeItem('idContacto')
-  localStorage.removeItem('imgContacto')
-
-}
-
-
+  }
 
 }
